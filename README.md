@@ -390,10 +390,26 @@ fastapi
 uvicorn
 python-multipart
 pydantic
-pyyaml
+PyYAML
+
 pandas
+numpy
+scikit-learn
+torch
+optuna
+tqdm
+
+langchain
+langchain-community
+langchain-ollama
+langchain-text-splitters
+langgraph
+faiss-cpu
+Declare4Py
+
 pytest
 httpx
+
 ```
 
 ---
