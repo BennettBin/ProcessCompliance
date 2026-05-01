@@ -383,36 +383,6 @@ Primary dependency file:
 requirements.txt
 ```
 
-Additional runtime dependencies used in current backend/frontend integration:
-
-```text
-fastapi
-uvicorn
-python-multipart
-pydantic
-PyYAML
-
-pandas
-numpy
-scikit-learn
-torch
-optuna
-tqdm
-
-langchain
-langchain-community
-langchain-ollama
-langchain-text-splitters
-langgraph
-faiss-cpu
-Declare4Py
-
-pytest
-httpx
-
-```
-
----
 
 ## External Services
 
