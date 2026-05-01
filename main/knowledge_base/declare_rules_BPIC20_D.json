@@ -1,0 +1,45 @@
+{
+  "Existence": {
+    "Existence1[Declaration SUBMITTED by EMPLOYEE] | |": "The activity \"Declaration SUBMITTED by EMPLOYEE\" must appear at least once in each trace.",
+    "Existence1[Declaration FINAL_APPROVED by SUPERVISOR] | |": "The activity \"Declaration FINAL_APPROVED by SUPERVISOR\" must appear at least once in each trace.",
+    "Existence1[Payment Handled] | |": "The activity \"Payment Handled\" must appear at least once in each trace.",
+    "Existence1[Request Payment] | |": "The activity \"Request Payment\" must appear at least once in each trace.",
+    "Existence1[Declaration APPROVED by ADMINISTRATION] | |": "The activity \"Declaration APPROVED by ADMINISTRATION\" must appear at least once in each trace."
+  },
+  "Exactly": {
+    "Exactly1[Declaration SUBMITTED by EMPLOYEE] | |": "The activity \"Declaration SUBMITTED by EMPLOYEE\" appears exactly once in each trace."
+  },
+  "Init": {
+    "Init[Declaration SUBMITTED by EMPLOYEE] | |": "The first activity of each trace must be \"Declaration SUBMITTED by EMPLOYEE\"."
+  },
+  "Absence": {
+    "Absence2[Declaration FINAL_APPROVED by SUPERVISOR] | |": "The activity \"Declaration FINAL_APPROVED by SUPERVISOR\" appears fewer than two times in each trace.",
+    "Absence2[Payment Handled] | |": "The activity \"Payment Handled\" appears fewer than two times in each trace.",
+    "Absence2[Request Payment] | |": "The activity \"Request Payment\" appears fewer than two times in each trace.",
+    "Absence2[Declaration APPROVED by ADMINISTRATION] | |": "The activity \"Declaration APPROVED by ADMINISTRATION\" appears fewer than two times in each trace."
+  },
+  "End": {
+    "End[Payment Handled] | |": "The last activity of each trace must be \"Payment Handled\"."
+  },
+  "Responded Existence": {
+    "Responded Existence[Declaration FINAL_APPROVED by SUPERVISOR, Declaration SUBMITTED by EMPLOYEE] | |": "At least one of \"Declaration FINAL_APPROVED by SUPERVISOR\" or \"Declaration SUBMITTED by EMPLOYEE\" must appear in each trace.",
+    "Responded Existence[Payment Handled, Declaration FINAL_APPROVED by SUPERVISOR] | |": "If \"Payment Handled\" appears, then \"Declaration FINAL_APPROVED by SUPERVISOR\" must also appear in the same trace.",
+    "Responded Existence[Declaration FINAL_APPROVED by SUPERVISOR, Payment Handled] | |": "If \"Declaration FINAL_APPROVED by SUPERVISOR\" appears, then \"Payment Handled\" must also appear in the same trace."
+  },
+  "Alternate Precedence": {
+    "Alternate Precedence[Declaration SUBMITTED by EMPLOYEE, Declaration FINAL_APPROVED by SUPERVISOR] | |": "Each occurrence of \"Declaration FINAL_APPROVED by SUPERVISOR\" must be immediately preceded by \"Declaration SUBMITTED by EMPLOYEE\", and no \"Declaration FINAL_APPROVED by SUPERVISOR\" can appear before the appearance of \"Declaration SUBMITTED by EMPLOYEE\"."
+  },
+  "Not Chain Precedence": {
+    "Not Chain Precedence[Declaration FINAL_APPROVED by SUPERVISOR, Declaration SUBMITTED by EMPLOYEE] | |": "If \"Declaration FINAL_APPROVED by SUPERVISOR\" appears, then \"Declaration SUBMITTED by EMPLOYEE\" cannot immediately follow it in each trace."
+  },
+  "Choice": {
+    "Choice[Declaration SUBMITTED by EMPLOYEE, Payment Handled] | |": "In each trace, either \"Declaration SUBMITTED by EMPLOYEE\" or \"Payment Handled\" must appear at least once.",
+    "Choice[Declaration FINAL_APPROVED by SUPERVISOR, Payment Handled] | |": "In each trace, either \"Declaration FINAL_APPROVED by SUPERVISOR\" or \"Payment Handled\" must appear at least once."
+  },
+  "Not Response": {
+    "Not Response[Payment Handled, Declaration SUBMITTED by EMPLOYEE] | |": "If \"Payment Handled\" appears, then \"Declaration SUBMITTED by EMPLOYEE\" cannot appear afterward in each trace."
+  },
+  "Not Chain Response": {
+    "Not Chain Response[Declaration SUBMITTED by EMPLOYEE, Payment Handled] | |": "If \"Declaration SUBMITTED by EMPLOYEE\" appears, then \"Payment Handled\" cannot appear immediately after \"Declaration SUBMITTED by EMPLOYEE\" in each trace."
+  }
+}

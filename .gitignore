@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# PyCharm
+.idea/
+
+# Model weights
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Logs
+*.log

@@ -1,0 +1,24 @@
+dataset:
+  name: BPIC20_D
+  event_log_path: data/BPIC20_D.csv
+  raw_xes_path: data/BPIC20_D.xes
+  running_trace_path: data/running_trace/BPIC20_D_trace.csv
+paths:
+  artifact_dir: artifacts
+  knowledge_base_dir: artifacts/knowledge_base
+  model_dir: artifacts/models
+  processed_feature_dir: artifacts/processed_features
+  run_dir: artifacts/runs
+  upload_dir: data/uploads
+ollama:
+  chat_model: qwen3:8b
+  embedding_model: qwen3-embedding:8b
+  base_url: http://localhost:11434
+agent:
+  debate_threshold: 0.7
+  max_rounds: 3
+prediction:
+  max_prefix_length: 20
+  device: auto
+logging:
+  level: INFO

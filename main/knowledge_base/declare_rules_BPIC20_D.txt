@@ -1,0 +1,21 @@
+The activity "Declaration SUBMITTED by EMPLOYEE" must appear at least once in each trace.
+The activity "Declaration SUBMITTED by EMPLOYEE" appears exactly once in each trace.
+The first activity of each trace must be "Declaration SUBMITTED by EMPLOYEE".
+The activity "Declaration FINAL_APPROVED by SUPERVISOR" must appear at least once in each trace.
+The activity "Declaration FINAL_APPROVED by SUPERVISOR" appears fewer than two times in each trace.
+The activity "Payment Handled" must appear at least once in each trace.
+The activity "Payment Handled" appears fewer than two times in each trace.
+The last activity of each trace must be "Payment Handled".
+The activity "Request Payment" must appear at least once in each trace.
+The activity "Request Payment" appears fewer than two times in each trace.
+The activity "Declaration APPROVED by ADMINISTRATION" must appear at least once in each trace.
+The activity "Declaration APPROVED by ADMINISTRATION" appears fewer than two times in each trace.
+At least one of "Declaration FINAL_APPROVED by SUPERVISOR" or "Declaration SUBMITTED by EMPLOYEE" must appear in each trace.
+Each occurrence of "Declaration FINAL_APPROVED by SUPERVISOR" must be immediately preceded by "Declaration SUBMITTED by EMPLOYEE", and no "Declaration FINAL_APPROVED by SUPERVISOR" can appear before the appearance of "Declaration SUBMITTED by EMPLOYEE".
+If "Declaration FINAL_APPROVED by SUPERVISOR" appears, then "Declaration SUBMITTED by EMPLOYEE" cannot immediately follow it in each trace.
+In each trace, either "Declaration SUBMITTED by EMPLOYEE" or "Payment Handled" must appear at least once.
+If "Payment Handled" appears, then "Declaration SUBMITTED by EMPLOYEE" cannot appear afterward in each trace.
+If "Declaration SUBMITTED by EMPLOYEE" appears, then "Payment Handled" cannot appear immediately after "Declaration SUBMITTED by EMPLOYEE" in each trace.
+In each trace, either "Declaration FINAL_APPROVED by SUPERVISOR" or "Payment Handled" must appear at least once.
+If "Payment Handled" appears, then "Declaration FINAL_APPROVED by SUPERVISOR" must also appear in the same trace.
+If "Declaration FINAL_APPROVED by SUPERVISOR" appears, then "Payment Handled" must also appear in the same trace.
