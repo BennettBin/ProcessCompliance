@@ -1,6 +1,6 @@
 ﻿# ProcessCompliance
 
-[中文文档](./README.zh.md)
+[中文文档](./main/README.zh.md)
 
 <p align="center">
   <b>Online process compliance monitoring with prediction, retrieval, and multi-agent review.</b>
