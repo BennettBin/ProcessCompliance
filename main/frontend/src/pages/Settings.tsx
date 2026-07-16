@@ -179,13 +179,13 @@ export default function Settings() {
             <input className="input" title="Dataset identifier, e.g. BPIC20_D." value={config.dataset.name} onChange={(e) => update("dataset", "name", e.target.value)} />
           </label>
           <label className="label">event_log_path
-            <input className="input" title="CSV event log path. Example: data/BPIC20_D.csv" value={config.dataset.event_log_path} onChange={(e) => update("dataset", "event_log_path", e.target.value)} />
+            <input className="input" title="CSV event log path. Example: dataset/new_data/BPIC20_D.csv" value={config.dataset.event_log_path} onChange={(e) => update("dataset", "event_log_path", e.target.value)} />
           </label>
           <label className="label">raw_xes_path
-            <input className="input" title="Raw XES file path. Example: data/BPIC20_D.xes" value={config.dataset.raw_xes_path} onChange={(e) => update("dataset", "raw_xes_path", e.target.value)} />
+            <input className="input" title="Raw XES file path. Example: dataset/raw_data/BPIC20_D.xes" value={config.dataset.raw_xes_path} onChange={(e) => update("dataset", "raw_xes_path", e.target.value)} />
           </label>
           <label className="label">running_trace_path
-            <input className="input" title="Running trace CSV path. Example: data/running_trace/BPIC20_D_trace.csv" value={config.dataset.running_trace_path} onChange={(e) => update("dataset", "running_trace_path", e.target.value)} />
+            <input className="input" title="Running trace CSV path. Example: dataset/running_trace/BPIC20_D_trace.csv" value={config.dataset.running_trace_path} onChange={(e) => update("dataset", "running_trace_path", e.target.value)} />
           </label>
         </div>
 

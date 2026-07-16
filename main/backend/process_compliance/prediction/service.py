@@ -63,7 +63,7 @@ class PredictionService:
 
         if nap_fn is not None:
             try:
-                nap_pred, nap_conf = _normalize_pred_tuple(nap_fn(running_trace=records))
+                nap_pred, nap_conf = _normalize_pred_tuple(nap_fn(running_trace=records, config=self.config))
                 out.next_activity = nap_pred
                 out.next_activity_confidence = nap_conf
             except Exception as e:
@@ -71,7 +71,7 @@ class PredictionService:
 
         if po_fn is not None:
             try:
-                po_pred, po_conf = _normalize_pred_tuple(po_fn(running_trace=records))
+                po_pred, po_conf = _normalize_pred_tuple(po_fn(running_trace=records, config=self.config))
                 out.outcome = po_pred
                 out.outcome_confidence = po_conf
             except Exception as e:
@@ -79,7 +79,7 @@ class PredictionService:
 
         if t_fn is not None:
             try:
-                out.remaining_time = _safe_float(t_fn(running_trace=records))
+                out.remaining_time = _safe_float(t_fn(running_trace=records, config=self.config))
             except Exception as e:
                 out.debug_raw_text = (out.debug_raw_text or "") + f"[t_predict error] {e}\n"
 

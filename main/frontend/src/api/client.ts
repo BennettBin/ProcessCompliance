@@ -1,7 +1,7 @@
 const defaultBaseUrl =
   typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:5174`
-    : "http://127.0.0.1:5174";
+    ? `${window.location.protocol}//${window.location.hostname}:8091`
+    : "http://127.0.0.1:8091";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? defaultBaseUrl;
 

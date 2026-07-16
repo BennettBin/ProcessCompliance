@@ -50,6 +50,7 @@ export default function AgentMessageCard({ title, content, status }: Props) {
             border: "1px solid #eee",
             borderRadius: 6,
             padding: 10,
+            color: "#000",
           }}
         >
           {content || "(empty)"}

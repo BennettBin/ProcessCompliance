@@ -5,20 +5,20 @@
 import csv
 import math
 import random
+from pathlib import Path
 
 import numpy as np
-import optuna
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from optuna.trial import TrialState
 from sklearn import metrics
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 
 from backend.process_compliance.utils import csv_to_dict, get_key_by_value, get_parameters, mkdir, read_log
 
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATASET = "BPIC20_D"
 ATTRIBUTES = ("remainingTimeNor", "concept:name", "org:resource", "org:role")
 GPU_ID = 0
@@ -26,7 +26,9 @@ RANDOM_SEED = 0
 EPOCH = 200
 TRIALS = 20
 ENCODING_LENGTH = 32
-DATA_ADD = f"data/{DATASET}.csv"
+DATA_ADD = str(PROJECT_ROOT / "dataset" / "new_data" / f"{DATASET}.csv")
+MODEL_DIR = str(PROJECT_ROOT / "model")
+PRO_DATA_DIR = str(PROJECT_ROOT / "artifacts" / "processed_features")
 
 np.random.seed(RANDOM_SEED)
 random.seed(RANDOM_SEED)
@@ -38,6 +40,30 @@ if USE_CUDA:
 
 # Same runtime convention as legacy file
 PREDICTION_MODE = "NAP"
+
+
+def _resolve_path(path: str | Path, base_dir: str | Path | None = None) -> Path:
+    p = Path(path)
+    if p.is_absolute():
+        return p.resolve()
+    root = Path(base_dir).resolve() if base_dir is not None else PROJECT_ROOT
+    return (root / p).resolve()
+
+
+def configure_paths(
+    *,
+    dataset_name: str | None = None,
+    dataset_csv: str | Path | None = None,
+    model_dir: str | Path | None = None,
+    pro_data_dir: str | Path | None = None,
+    base_dir: str | Path | None = None,
+) -> None:
+    global DATASET, DATA_ADD, MODEL_DIR, PRO_DATA_DIR
+    if dataset_name:
+        DATASET = dataset_name
+    DATA_ADD = str(_resolve_path(dataset_csv or Path("dataset") / "new_data" / f"{DATASET}.csv", base_dir))
+    MODEL_DIR = str(_resolve_path(model_dir or "model", base_dir))
+    PRO_DATA_DIR = str(_resolve_path(pro_data_dir or Path("artifacts") / "processed_features", base_dir))
 
 
 def trans_to_str(val):
@@ -339,7 +365,7 @@ class ResAttSelf(nn.Module):
 
 
 def data_pro():
-    log = CsvEventLog()
+    log = CsvEventLog(log_add=DATA_ADD)
     input_channel = len(ATTRIBUTES)
     label_num = len(log.activity_encoding)
     max_prefix_length = log.max_prefix_length
@@ -347,7 +373,7 @@ def data_pro():
     train_log, test_log = dataset_split(log.log_dict, train_percent=0.8)
     x_train_set, y_train_set = log.dataset_encoding(train_log)
     x_test_set, y_test_set = log.dataset_encoding(test_log)
-    data_dir = "pro_data/"
+    data_dir = str(_resolve_path(PRO_DATA_DIR)) + "/"
     mkdir(data_dir)
     np.save(f"{data_dir}{DATASET}_{PREDICTION_MODE}_train_data_x.npy", np.array(x_train_set))
     np.save(f"{data_dir}{DATASET}_{PREDICTION_MODE}_test_data_x.npy", np.array(x_test_set))
@@ -366,7 +392,10 @@ def data_pro():
 
 
 def objective(trial):
-    parameters = get_parameters(f"pro_data/{DATASET}_{PREDICTION_MODE}_parameters.csv")
+    import optuna
+
+    data_dir = str(_resolve_path(PRO_DATA_DIR))
+    parameters = get_parameters(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_parameters.csv"))
     batch_size = trial.suggest_int("batch_size", 32, 128, step=32)
     learning_rate = trial.suggest_float("learning_rate", 0.00001, 0.0001, log=False)
     dropout_rate = trial.suggest_float("drop_rate", 0.1, 0.9, log=False)
@@ -384,22 +413,22 @@ def objective(trial):
     criterion_t = nn.MSELoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
 
-    x_train_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_train_data_x.npy"), dtype=torch.float)
+    x_train_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_train_data_x.npy")), dtype=torch.float)
     if PREDICTION_MODE == "T":
-        y_train_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_train_data_y.npy").astype(float), dtype=torch.float)
+        y_train_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_train_data_y.npy")).astype(float), dtype=torch.float)
     else:
-        y_train_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_train_data_y.npy"), dtype=torch.float)
+        y_train_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_train_data_y.npy")), dtype=torch.float)
     train_loader = DataLoader(TensorDataset(x_train_data, y_train_data), shuffle=True, batch_size=batch_size, drop_last=True)
 
-    x_test_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_test_data_x.npy"), dtype=torch.float)
+    x_test_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_test_data_x.npy")), dtype=torch.float)
     if PREDICTION_MODE == "T":
-        y_test_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_test_data_y.npy").astype(float), dtype=torch.float)
+        y_test_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_test_data_y.npy")).astype(float), dtype=torch.float)
     else:
-        y_test_data = torch.tensor(np.load(f"pro_data/{DATASET}_{PREDICTION_MODE}_test_data_y.npy"), dtype=torch.float)
+        y_test_data = torch.tensor(np.load(str(Path(data_dir) / f"{DATASET}_{PREDICTION_MODE}_test_data_y.npy")), dtype=torch.float)
     test_loader = DataLoader(TensorDataset(x_test_data, y_test_data), shuffle=True, batch_size=batch_size, drop_last=True)
 
     avg_test_losses = []
-    model_dir = "model/"
+    model_dir = str(_resolve_path(MODEL_DIR)) + "/"
     mkdir(model_dir)
     model_path = f"{model_dir}{DATASET}_{PREDICTION_MODE}.pth"
     net.cuda()
@@ -430,8 +459,7 @@ def objective(trial):
         labels_test, predict_test = [], []
         with torch.no_grad():
             for inputs_, labels_ in test_loader:
-                if USE_CUDA:
-                    inputs_, labels_ = inputs_.cuda(), labels_.cuda()
+                inputs_, labels_ = inputs_.cuda(), labels_.cuda()
                 test_output = net(inputs_)
                 if PREDICTION_MODE == "T":
                     test_loss = criterion_t(test_output.squeeze(), labels_)
@@ -469,51 +497,99 @@ def objective(trial):
 
 
 def main():
+    try:
+        import optuna
+    except ImportError as e:
+        raise RuntimeError("Training requires optuna. Install project training dependencies before auto-training models.") from e
+
     study = optuna.create_study(direction="minimize")
     study.optimize(objective, n_trials=TRIALS, show_progress_bar=True)
     trial = study.best_trial
     best = {key: value for key, value in trial.params.items()}
-    pd.DataFrame(best, index=[0]).to_csv(f"pro_data/best_hyperparameters_{DATASET}_{PREDICTION_MODE}.csv", index=False)
+    data_dir = _resolve_path(PRO_DATA_DIR)
+    mkdir(str(data_dir))
+    pd.DataFrame(best, index=[0]).to_csv(data_dir / f"best_hyperparameters_{DATASET}_{PREDICTION_MODE}.csv", index=False)
 
 
-def predict(trace_add, prediction_mode_):
-    trace = read_log(trace_add)
-    log = CsvEventLog()
-    trace_encoding_ = log.trace_encoding(trace[0])
-    final_encoding = log.fit_prefix(trace_encoding_)
-    trace_input = torch.tensor(final_encoding).unsqueeze(dim=0).cuda()
-    if prediction_mode_ == "NAP":
-        p = get_parameters(f"pro_data/{DATASET}_NAP_parameters.csv")
-        h = get_parameters(f"pro_data/best_hyperparameters_{DATASET}_NAP.csv")
-        model = ResAttSelf(p["encoding_length"], p["label_num"], p["max_prefix_length"], len(ATTRIBUTES), 1, h["hidden_dim"], h["drop_rate"])
-        state = torch.load(f"model/{DATASET}_NAP.pth", weights_only=True)
-        model.load_state_dict(state)
-        model.eval().cuda()
-        with torch.no_grad():
-            out = torch.nn.Softmax(dim=1)(model(trace_input))
-            pred = torch.argmax(out, 1)
-            probs = out.tolist()
-            return get_key_by_value(log.activity_encoding, pred.item()), max(probs[0])
-    if prediction_mode_ == "PO":
-        p = get_parameters(f"pro_data/{DATASET}_PO_parameters.csv")
-        h = get_parameters(f"pro_data/best_hyperparameters_{DATASET}_PO.csv")
-        model = ResAttSelf(p["encoding_length"], p["label_num"], p["max_prefix_length"], len(ATTRIBUTES), 1, h["hidden_dim"], h["drop_rate"])
-        state = torch.load(f"model/{DATASET}_PO.pth", weights_only=True)
-        model.load_state_dict(state)
-        model.eval().cuda()
-        with torch.no_grad():
-            out = torch.nn.Softmax(dim=1)(model(trace_input))
-            pred = torch.argmax(out, 1)
-            probs = out.tolist()
-            return get_key_by_value(log.activity_encoding, pred.item()), max(probs[0])
-    p = get_parameters(f"pro_data/{DATASET}_T_parameters.csv")
-    h = get_parameters(f"pro_data/best_hyperparameters_{DATASET}_T.csv")
+def _load_parameters_or_infer(pro_data_path: Path, dataset: str, mode: str, log: CsvEventLog, state: dict):
+    parameter_file = pro_data_path / f"{dataset}_{mode}_parameters.csv"
+    if parameter_file.exists():
+        return get_parameters(str(parameter_file))
+    return {
+        "input_channel": len(ATTRIBUTES),
+        "label_num": len(log.activity_encoding),
+        "max_prefix_length": log.max_prefix_length,
+        "encoding_length": log.encoding_length,
+    }
+
+
+def _load_hyperparameters_or_infer(pro_data_path: Path, dataset: str, mode: str, state: dict):
+    hyperparameter_file = pro_data_path / f"best_hyperparameters_{dataset}_{mode}.csv"
+    if hyperparameter_file.exists():
+        return get_parameters(str(hyperparameter_file))
+    linear_weight = state.get("linear.weight")
+    if linear_weight is None:
+        raise FileNotFoundError(f"Missing hyperparameters and cannot infer hidden_dim from model state for {dataset}_{mode}.")
+    return {
+        "hidden_dim": int(linear_weight.shape[1] // 2),
+        "drop_rate": 0.0,
+    }
+
+
+def _torch_load_state(path: Path):
+    try:
+        return torch.load(str(path), weights_only=True)
+    except TypeError:
+        return torch.load(str(path))
+
+
+def _predict_classification(mode: str, dataset: str, pro_data_path: Path, model_path: Path, log: CsvEventLog, trace_input):
+    global PREDICTION_MODE
+    PREDICTION_MODE = mode
+    state = _torch_load_state(model_path / f"{dataset}_{mode}.pth")
+    p = _load_parameters_or_infer(pro_data_path, dataset, mode, log, state)
+    h = _load_hyperparameters_or_infer(pro_data_path, dataset, mode, state)
     model = ResAttSelf(p["encoding_length"], p["label_num"], p["max_prefix_length"], len(ATTRIBUTES), 1, h["hidden_dim"], h["drop_rate"])
-    state = torch.load(f"model/{DATASET}_T.pth", weights_only=True)
     model.load_state_dict(state)
     model.eval().cuda()
-    avg_times = csv_to_dict("dataset/new_data/avg_times.csv")
+    with torch.no_grad():
+        out = torch.nn.Softmax(dim=1)(model(trace_input))
+        pred = torch.argmax(out, 1)
+        probs = out.tolist()
+        return get_key_by_value(log.activity_encoding, pred.item()), max(probs[0])
+
+
+def predict(trace_add, prediction_mode_, *, dataset_name=None, model_dir=None, base_dir=None, pro_data_dir=None, dataset_csv=None):
+    global PREDICTION_MODE
+    dataset = dataset_name or DATASET
+    base_path = Path(base_dir).resolve() if base_dir is not None else PROJECT_ROOT
+    model_path = _resolve_path(model_dir or MODEL_DIR, base_path)
+
+    pro_data_path = _resolve_path(pro_data_dir or PRO_DATA_DIR, base_path)
+    trace = read_log(trace_add)
+    dataset_csv_path = _resolve_path(dataset_csv or Path("dataset") / "new_data" / f"{dataset}.csv", base_path)
+    if not dataset_csv_path.exists():
+        raise FileNotFoundError(f"Dataset CSV not found: {dataset_csv_path}")
+    log = CsvEventLog(log_add=str(dataset_csv_path))
+    trace_encoding_ = log.trace_encoding(trace[0])
+    final_encoding = log.fit_prefix(trace_encoding_)
+    trace_input = torch.tensor(final_encoding, dtype=torch.float32).unsqueeze(dim=0).cuda()
+    if prediction_mode_ == "NAP":
+        return _predict_classification("NAP", dataset, pro_data_path, model_path, log, trace_input)
+    if prediction_mode_ == "PO":
+        return _predict_classification("PO", dataset, pro_data_path, model_path, log, trace_input)
+    PREDICTION_MODE = "T"
+    state = _torch_load_state(model_path / f"{dataset}_T.pth")
+    p = _load_parameters_or_infer(pro_data_path, dataset, "T", log, state)
+    h = _load_hyperparameters_or_infer(pro_data_path, dataset, "T", state)
+    model = ResAttSelf(p["encoding_length"], p["label_num"], p["max_prefix_length"], len(ATTRIBUTES), 1, h["hidden_dim"], h["drop_rate"])
+    model.load_state_dict(state)
+    model.eval().cuda()
+    avg_times_file = (base_path / "dataset" / "new_data" / "avg_times.csv").resolve()
+    avg_times = csv_to_dict(str(avg_times_file)) if avg_times_file.exists() else {}
     with torch.no_grad():
         t_out = model(trace_input)
-        return (avg_times[DATASET] * t_out.item()) / 86400
+        if dataset in avg_times:
+            return (avg_times[dataset] * t_out.item()) / 86400
+        return t_out.item()
 

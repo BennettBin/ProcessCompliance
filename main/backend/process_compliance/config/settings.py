@@ -3,18 +3,18 @@ from pydantic import BaseModel, Field
 
 class DatasetConfig(BaseModel):
     name: str = "BPIC20_D"
-    event_log_path: str = "data/BPIC20_D.csv"
-    raw_xes_path: str = "data/BPIC20_D.xes"
-    running_trace_path: str = "data/running_trace/BPIC20_D_trace.csv"
+    event_log_path: str = "dataset/new_data/BPIC20_D.csv"
+    raw_xes_path: str = "dataset/raw_data/BPIC20_D.xes"
+    running_trace_path: str = "dataset/running_trace/BPIC20_D_trace.csv"
 
 
 class PathsConfig(BaseModel):
     artifact_dir: str = "artifacts"
-    knowledge_base_dir: str = "artifacts/knowledge_base"
-    model_dir: str = "artifacts/models"
+    knowledge_base_dir: str = "knowledge_base"
+    model_dir: str = "model"
     processed_feature_dir: str = "artifacts/processed_features"
     run_dir: str = "artifacts/runs"
-    upload_dir: str = "data/uploads"
+    upload_dir: str = "dataset/uploads"
 
 
 class OllamaConfig(BaseModel):

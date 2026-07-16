@@ -1,15 +1,15 @@
 dataset:
   name: BPIC20_D
-  event_log_path: data/BPIC20_D.csv
-  raw_xes_path: data/BPIC20_D.xes
-  running_trace_path: data/running_trace/BPIC20_D_trace.csv
+  event_log_path: dataset/new_data/BPIC20_D.csv
+  raw_xes_path: dataset/raw_data/BPIC20_D.xes
+  running_trace_path: dataset/running_trace/BPIC20_D_trace.csv
 paths:
   artifact_dir: artifacts
-  knowledge_base_dir: artifacts/knowledge_base
-  model_dir: artifacts/models
+  knowledge_base_dir: knowledge_base
+  model_dir: model
   processed_feature_dir: artifacts/processed_features
   run_dir: artifacts/runs
-  upload_dir: data/uploads
+  upload_dir: dataset/uploads
 ollama:
   chat_model: qwen3:8b
   embedding_model: qwen3-embedding:8b

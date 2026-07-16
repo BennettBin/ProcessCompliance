@@ -9,8 +9,8 @@ def test_api_runs_create_and_stream():
     create_resp = client.post(
         "/api/runs",
         json={
-            "event_log_path": "data/processed/not_exists.csv",
-            "running_trace_path": "data/running_trace/not_exists.csv",
+            "event_log_path": "dataset/new_data/not_exists.csv",
+            "running_trace_path": "dataset/running_trace/not_exists.csv",
             "dataset_name": "BPIC20_D",
         },
     )

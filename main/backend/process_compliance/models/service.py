@@ -29,8 +29,11 @@ class ModelService:
         ]
 
     def _resolve_model_dir(self) -> Path:
-        # User requested runtime check/train against root `model/`.
-        return Path("model")
+        return Path(self.config.paths.model_dir)
+
+    def _resolve_base_dir(self) -> Path:
+        model_dir = self._resolve_model_dir().resolve()
+        return model_dir.parent
 
     def _missing_files(self, dataset_name: str) -> Tuple[Path, List[str]]:
         model_dir = self._resolve_model_dir()
@@ -79,7 +82,13 @@ class ModelService:
 
         try:
             legacy_trainer.DATASET = dataset_name
-            legacy_trainer.DATA_ADD = f"data/{dataset_name}.csv"
+            legacy_trainer.configure_paths(
+                dataset_name=dataset_name,
+                dataset_csv=self.config.dataset.event_log_path,
+                model_dir=self.config.paths.model_dir,
+                pro_data_dir=self.config.paths.processed_feature_dir,
+                base_dir=self._resolve_base_dir(),
+            )
             for mode in ("NAP", "PO", "T"):
                 legacy_trainer.PREDICTION_MODE = mode
                 legacy_trainer.data_pro()

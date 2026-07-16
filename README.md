@@ -131,7 +131,7 @@ data/running_trace/BPIC20_D_trace.csv
 Backend:
 
 ```bash
-uvicorn backend.main:app --reload --port 5174
+uvicorn backend.main:app --reload --port 8091
 ```
 
 Frontend:
@@ -153,7 +153,7 @@ python scripts/run_online_monitoring.py --event-log data/BPIC20_D.csv --running-
 1. Start backend in `main/`:
 
 ```bash
-uvicorn backend.main:app --reload --port 5174
+uvicorn backend.main:app --reload --port 8091
 ```
 
 2. Start frontend in another terminal:
@@ -164,7 +164,7 @@ npm install
 npm run dev
 ```
 
-3. Open the frontend URL shown by Vite (commonly `http://localhost:5173`) and go to `/run`.
+3. Open the frontend URL shown by Vite (commonly `http://localhost:8090`) and go to `/run`.
 
 4. Fill the form fields:
 - `event_log_path`: `data/BPIC20_D.csv`
@@ -185,8 +185,8 @@ npm run dev
 ### Basic Usage (API)
 
 ```bash
-curl http://localhost:5174/api/health
-curl -X POST http://localhost:5174/api/runs -H "Content-Type: application/json" -d "{\"event_log_path\":\"data/BPIC20_D.csv\",\"running_trace_path\":\"data/running_trace/BPIC20_D_trace.csv\",\"dataset_name\":\"BPIC20_D\"}"
+curl http://localhost:8091/api/health
+curl -X POST http://localhost:8091/api/runs -H "Content-Type: application/json" -d "{\"event_log_path\":\"data/BPIC20_D.csv\",\"running_trace_path\":\"data/running_trace/BPIC20_D_trace.csv\",\"dataset_name\":\"BPIC20_D\"}"
 ```
 
 ### Python API Usage
@@ -338,7 +338,7 @@ If model runtime is unavailable, service returns controlled unknown values and k
 Example:
 
 ```bash
-curl -X POST http://localhost:5174/api/runs \
+curl -X POST http://localhost:8091/api/runs \
   -H "Content-Type: application/json" \
   -d "{\"event_log_path\":\"data/BPIC20_D.csv\",\"running_trace_path\":\"data/running_trace/BPIC20_D_trace.csv\",\"dataset_name\":\"BPIC20_D\"}"
 ```

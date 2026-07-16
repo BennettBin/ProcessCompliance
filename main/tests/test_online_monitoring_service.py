@@ -9,8 +9,8 @@ def test_online_monitoring_service_controlled_error_on_missing_files():
         cfg = load_config()
         svc = OnlineMonitoringService(cfg)
         result = await svc.analyze(
-            event_log_path="data/processed/not_exists.csv",
-            running_trace_path="data/running_trace/not_exists.csv",
+            event_log_path="dataset/new_data/not_exists.csv",
+            running_trace_path="dataset/running_trace/not_exists.csv",
             dataset_name=cfg.dataset.name,
         )
         return result

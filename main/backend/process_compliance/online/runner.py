@@ -217,18 +217,16 @@ class OnlineMonitoringService:
             await asyncio.sleep(visual_step_delay_seconds)
             step_started_at["knowledge_base_preparation"] = time.time()
 
-            root_knowledge_dir = Path("knowledge_base")
-            root_knowledge_dir.mkdir(parents=True, exist_ok=True)
-            rules_txt = root_knowledge_dir / f"declare_rules_{ds_name}.txt"
-            log_info_txt = root_knowledge_dir / f"log_info_{ds_name}.txt"
+            knowledge_dir = Path(self.config.paths.knowledge_base_dir)
+            knowledge_dir.mkdir(parents=True, exist_ok=True)
+            rules_txt = knowledge_dir / f"declare_rules_{ds_name}.txt"
+            log_info_txt = knowledge_dir / f"log_info_{ds_name}.txt"
             knowledge_built = False
             knowledge_warning = None
 
-            # Keep knowledge base path aligned with user-requested folder.
-            self.config.paths.knowledge_base_dir = str(root_knowledge_dir)
             if not (rules_txt.exists() and log_info_txt.exists()):
                 try:
-                    build_knowledge_files(data_name=ds_name, knowledge_base_dir=str(root_knowledge_dir))
+                    build_knowledge_files(data_name=ds_name, knowledge_base_dir=str(knowledge_dir))
                     knowledge_built = True
                 except Exception as e:
                     knowledge_warning = f"Knowledge file build failed: {e}"
@@ -248,7 +246,7 @@ class OnlineMonitoringService:
                             time.time() - step_started_at.get("knowledge_base_preparation", time.time()), 2
                         ),
                         "eta_remaining_seconds": remaining_eta(),
-                        "knowledge_base_dir": str(root_knowledge_dir),
+                        "knowledge_base_dir": str(knowledge_dir),
                         "rules_txt_exists": rules_txt.exists(),
                         "log_info_txt_exists": log_info_txt.exists(),
                         "knowledge_files_built": knowledge_built,

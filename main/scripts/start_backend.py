@@ -34,7 +34,7 @@ def is_backend_health_ok(host: str, port: int) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Start ProcessCompliance backend safely.")
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=5174)
+    parser.add_argument("--port", type=int, default=8091)
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
 

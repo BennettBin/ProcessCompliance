@@ -134,12 +134,13 @@ def main(
     csv_log_file = APP_CONFIG.dataset.event_log_path
     running_trace_file = APP_CONFIG.dataset.running_trace_path
 
-    if not Path(xes_log_file).exists():
-        xes_log_file = f"./data/{data_name}.xes"
-    if not Path(csv_log_file).exists():
-        csv_log_file = f"./data/{data_name}.csv"
-    if not Path(running_trace_file).exists():
-        running_trace_file = f"./data/running_trace/{data_name}_trace.csv"
+    missing_inputs = [
+        str(path)
+        for path in (Path(xes_log_file), Path(csv_log_file), Path(running_trace_file))
+        if not path.exists()
+    ]
+    if missing_inputs:
+        raise FileNotFoundError("Missing configured data files: " + ", ".join(missing_inputs))
 
     mkdir(knowledge_base_dir)
     out_rule_json_path = f"{knowledge_base_dir}/declare_rules_{data_name}.json"

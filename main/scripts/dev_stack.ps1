@@ -1,6 +1,6 @@
 param(
-  [int]$BackendPort = 5174,
-  [int]$FrontendPort = 5173,
+  [int]$BackendPort = 8091,
+  [int]$FrontendPort = 8090,
   [switch]$ForceFreePorts = $true
 )
 
@@ -80,6 +80,7 @@ function Stop-ProcessSafe {
 
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $frontendDir = Join-Path $root "frontend"
+$viteEntry = Join-Path $frontendDir "node_modules\vite\bin\vite.js"
 
 # Ensure node/npm are discoverable in this shell
 if (Test-Path "C:\Program Files\nodejs\node.exe") {
@@ -120,16 +121,19 @@ try {
   Write-Host "[dev-stack] Starting backend on http://127.0.0.1:$BackendPort" -ForegroundColor Cyan
   $backend = Start-Process `
     -FilePath "python" `
-    -ArgumentList "-m","uvicorn","backend.main:app","--reload","--host","127.0.0.1","--port",$BackendPort `
+    -ArgumentList "-m","uvicorn","backend.main:app","--host","127.0.0.1","--port",$BackendPort `
     -WorkingDirectory $root `
     -PassThru
 
   Start-Sleep -Seconds 1
 
   Write-Host "[dev-stack] Starting frontend on http://127.0.0.1:$FrontendPort" -ForegroundColor Cyan
+  if (-not (Test-Path $viteEntry)) {
+    throw "Vite entry not found: $viteEntry. Run npm install in $frontendDir first."
+  }
   $frontend = Start-Process `
-    -FilePath "npm.cmd" `
-    -ArgumentList "run","dev" `
+    -FilePath "node.exe" `
+    -ArgumentList $viteEntry,"--host","127.0.0.1","--port",$FrontendPort,"--strictPort" `
     -WorkingDirectory $frontendDir `
     -PassThru
 

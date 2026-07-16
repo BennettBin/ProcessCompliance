@@ -58,8 +58,8 @@ function mapAgentToStep(agent?: string | null): StepKey | null {
 }
 
 export default function RunPrediction() {
-  const [eventLogPath, setEventLogPath] = useState("data/BPIC20_D.csv");
-  const [runningTracePath, setRunningTracePath] = useState("data/running_trace/BPIC20_D_trace.csv");
+  const [eventLogPath, setEventLogPath] = useState("dataset/new_data/BPIC20_D.csv");
+  const [runningTracePath, setRunningTracePath] = useState("dataset/running_trace/BPIC20_D_trace.csv");
   const [datasetName, setDatasetName] = useState("BPIC20_D");
   const [status, setStatus] = useState<UiStatus>("idle");
   const [runId, setRunId] = useState<string>("");

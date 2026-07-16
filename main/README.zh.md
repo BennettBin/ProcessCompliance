@@ -76,7 +76,7 @@ pip install -r requirements.txt
 ### 4. 启动后端
 
 ```bash
-uvicorn backend.main:app --reload --port 5174
+uvicorn backend.main:app --reload --port 8091
 ```
 
 ### 5. 启动前端
@@ -100,7 +100,7 @@ python scripts/run_online_monitoring.py --event-log data/BPIC20_D.csv --running-
 1. 在 `main/` 目录启动后端：
 
 ```bash
-uvicorn backend.main:app --reload --port 5174
+uvicorn backend.main:app --reload --port 8091
 ```
 
 2. 在另一个终端启动前端：
@@ -110,7 +110,7 @@ cd frontend
 npm run dev
 ```
 
-3. 打开 Vite 提示的地址（通常是 `http://localhost:5173`），进入 `/run` 页面。
+3. 打开 Vite 提示的地址（通常是 `http://localhost:8090`），进入 `/run` 页面。
 
 4. 在表单中输入：
 - `event_log_path`：事件日志 CSV 路径
@@ -127,8 +127,8 @@ npm run dev
 ## API 示例
 
 ```bash
-curl http://localhost:5174/api/health
-curl -X POST http://localhost:5174/api/runs -H "Content-Type: application/json" -d "{\"event_log_path\":\"data/BPIC20_D.csv\",\"running_trace_path\":\"data/running_trace/BPIC20_D_trace.csv\",\"dataset_name\":\"BPIC20_D\"}"
+curl http://localhost:8091/api/health
+curl -X POST http://localhost:8091/api/runs -H "Content-Type: application/json" -d "{\"event_log_path\":\"data/BPIC20_D.csv\",\"running_trace_path\":\"data/running_trace/BPIC20_D_trace.csv\",\"dataset_name\":\"BPIC20_D\"}"
 ```
 
 ---
@@ -139,5 +139,5 @@ curl -X POST http://localhost:5174/api/runs -H "Content-Type: application/json" 
 - 向量库缺失：运行时会自动尝试构建，也可先手动执行知识库构建脚本。
 - 模型文件缺失：运行时会自动进入训练步骤。
 - CSV 缺少必要列：后端会返回结构化校验错误。
-- 前端无法连接后端：检查前端 API 地址与后端端口是否一致（默认 `5174`）。
+- 前端无法连接后端：检查前端 API 地址与后端端口是否一致（默认 `8091`）。
 
